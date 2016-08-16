@@ -55,8 +55,29 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
+var request = require("request");
+
+var options = { method: 'GET',
+  url: 'http://120.27.94.166:2999/getRooms',
+  qs: { platform: 'huajiao', topn: '30' },
+  headers:
+  { 'postman-token': '890181c3-518e-030b-5de8-0d83fcffab86',
+    'cache-control': 'no-cache' } };
 var HJ = require("./model/HJ");
-new HJ("27168361");
+
+request(options, function (error, response, body) {
+  if (error) return console.log(error);
+  var parse = JSON.parse(body);
+  var data = parse.data;
+  var count=0;
+  var interval = setInterval(function () {
+    if(count>=data.length)
+        clearInterval(interval);
+    new HJ(data[count++].room_id);
+  },1000);
+  console.log(body);
+});
+
 
 
 module.exports = app;
